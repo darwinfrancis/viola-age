@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat)](https://github.com/darwinfrancis/face-perception/blob/master/LICENSE.txt)
 
 
-With Viola age classification library, you can find age range of a give face bitmap image.
+With Viola Age classification library, you can find age range of a given face bitmap.
 
 ![ScreenShot](screenshot/screen_viola_1.jpg)
 
@@ -15,7 +15,7 @@ With Viola age classification library, you can find age range of a give face bit
 Download sample application [sample_v_1.0.0](app-voila-age-sample.apk)
 
 **Compatibility**
- * *Minimum Android SDK* : Viola 1.0.0 requires a minimum API level of 21.
+ * *Minimum Android SDK* : Viola Age 1.0.0 requires a minimum API level of 21.
 
 **Installation**
 
@@ -45,7 +45,7 @@ or Maven:
 ```kotlin
 val violaAgeClassifier = ViolaAgeClassifier(listener)
 
-violaAgeClassifier.findAgeAsync(bitmap)
+violaAgeClassifier.findAgeAsync(bitmap) OR val result:List<AgeRecognition> = violaAgeClassifier.findAgeSynchronized(faceBitmap)              
 
 private val listener: AgeClassificationListener = object : AgeClassificationListener {
 
@@ -60,7 +60,7 @@ private val listener: AgeClassificationListener = object : AgeClassificationList
 ```java
 ViolaAgeClassifier violaAgeClassifier = new ViolaAgeClassifier(listener);
 
-violaAgeClassifier.findAgeAsync(bitmap);
+violaAgeClassifier.findAgeAsync(bitmap); OR List<AgeRecognition> RESULT = violaAgeClassifier.findAgeSynchronized(faceBitmap);
 
 private final AgeClassificationListener listener = new AgeClassificationListener() {
         @Override
@@ -76,7 +76,7 @@ Viola Age Classification provides the following values in Result class
 
 | Result | Description | Type |
 | :--- | :--- | :--- |
-| `result` |  age recognition result list | List<AgeRecognition> |
+| `result` |  age recognition result list | AgeRecognition |
 
 ## Author
 Darwin Francis - @darwinfrancis on GitHub, @darwin-francis on linkedin
