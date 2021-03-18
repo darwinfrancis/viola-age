@@ -1,0 +1,3 @@
+include ':age'
+include ':app'
+rootProject.name = "Viola Age Classification"
