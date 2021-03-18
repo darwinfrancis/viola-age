@@ -45,9 +45,7 @@ or Maven:
 ```kotlin
 val violaAgeClassifier = ViolaAgeClassifier(listener)
 
-violaAgeClassifier.findAgeAsync(bitmap) //asynchronous call using callback listener
-                  OR
-val result:List<AgeRecognition> = violaAgeClassifier.findAgeSynchronized(faceBitmap)   //synchronous call            
+violaAgeClassifier.findAgeAsync(bitmap) //asynchronous call using callback interface         
 
 private val listener: AgeClassificationListener = object : AgeClassificationListener {
 
@@ -55,6 +53,10 @@ private val listener: AgeClassificationListener = object : AgeClassificationList
 
         override fun onAgeClassificationError(error: String) {}
 }
+
+
+//OR using synchronous function call
+val result:List<AgeRecognition> = violaAgeClassifier.findAgeSynchronized(faceBitmap)   //synchronous call   
 ```
 
 
@@ -62,7 +64,7 @@ private val listener: AgeClassificationListener = object : AgeClassificationList
 ```java
 ViolaAgeClassifier violaAgeClassifier = new ViolaAgeClassifier(listener);
 
-violaAgeClassifier.findAgeAsync(bitmap); OR List<AgeRecognition> RESULT = violaAgeClassifier.findAgeSynchronized(faceBitmap);
+violaAgeClassifier.findAgeAsync(bitmap); //asynchronous call using callback interface
 
 private final AgeClassificationListener listener = new AgeClassificationListener() {
         @Override
@@ -71,6 +73,9 @@ private final AgeClassificationListener listener = new AgeClassificationListener
         @Override
         public void onAgeClassificationError(@NotNull String error) { }
 };
+
+//OR using synchronous function call
+List<AgeRecognition> RESULT = violaAgeClassifier.findAgeSynchronized(faceBitmap);
 ```
 
 ### Age classification result
