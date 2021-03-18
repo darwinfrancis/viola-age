@@ -12,7 +12,7 @@ With Viola Age classification library, you can find age range of a given face bi
 ## Getting Started
 **Demo application**
 
-Download sample application [sample_v_1.0.0](app-voila-age-sample.apk)
+Download sample application [sample_v_1.0.0](app-viola-age-demo.apk)
 
 **Compatibility**
  * *Minimum Android SDK* : Viola Age 1.0.0 requires a minimum API level of 21.
