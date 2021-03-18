@@ -45,7 +45,9 @@ or Maven:
 ```kotlin
 val violaAgeClassifier = ViolaAgeClassifier(listener)
 
-violaAgeClassifier.findAgeAsync(bitmap) OR val result:List<AgeRecognition> = violaAgeClassifier.findAgeSynchronized(faceBitmap)              
+violaAgeClassifier.findAgeAsync(bitmap) //asynchronous call using callback listener
+                  OR
+val result:List<AgeRecognition> = violaAgeClassifier.findAgeSynchronized(faceBitmap)   //synchronous call            
 
 private val listener: AgeClassificationListener = object : AgeClassificationListener {
 
