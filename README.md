@@ -7,7 +7,7 @@
 
 With Viola Age classification library, you can find age range of a given face bitmap.
 
-![ScreenShot](screenshot/screen_viola_1.jpg)
+![ScreenShot](screenshot/screen_shot_1.jpg)
 
 ## Getting Started
 **Demo application**
@@ -75,7 +75,7 @@ private final AgeClassificationListener listener = new AgeClassificationListener
 };
 
 //OR using synchronous function call
-List<AgeRecognition> RESULT = violaAgeClassifier.findAgeSynchronized(faceBitmap);
+List<AgeRecognition> result = violaAgeClassifier.findAgeSynchronized(faceBitmap);   //synchronous call
 ```
 
 ### Age classification result
