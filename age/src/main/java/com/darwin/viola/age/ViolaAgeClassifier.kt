@@ -2,10 +2,14 @@ package com.darwin.viola.age
 
 import android.content.Context
 import android.graphics.Bitmap
-import kotlinx.coroutines.*
+import android.media.FaceDetector
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
-import java.lang.IllegalStateException
-import kotlin.coroutines.coroutineContext
+import java.lang.IllegalArgumentException
+
 
 /**
  * The class ViolaAgeClassifier
@@ -53,10 +57,14 @@ class ViolaAgeClassifier(private val listener: AgeClassificationListener) {
         if (isInitialized) {
             Util.printLog("Processing face bitmap for age classification.")
             coroutineScope.launch {
-                val results: List<AgeRecognition> =
-                    classifier.recognizeImage(faceBitmap, 0)
-                Util.printLog("Age classification completed, sending back the result.")
-                withContext(Dispatchers.Main) { listener.onAgeClassificationResult(results) }
+                if (verifyFacePresence(faceBitmap)) {
+                    val results: List<AgeRecognition> =
+                        classifier.recognizeImage(faceBitmap, 0)
+                    Util.printLog("Age classification completed, sending back the result.")
+                    withContext(Dispatchers.Main) { listener.onAgeClassificationResult(results) }
+                } else {
+                    withContext(Dispatchers.Main) { listener.onAgeClassificationError("There is no face portraits in the given image.") }
+                }
             }
         } else {
             Util.printLog("Viola age classifier is not initialized.")
@@ -65,14 +73,25 @@ class ViolaAgeClassifier(private val listener: AgeClassificationListener) {
     }
 
 
-    @Throws(IllegalStateException::class)
+    @Throws(IllegalStateException::class, IllegalArgumentException::class)
     fun findAgeSynchronized(faceBitmap: Bitmap): List<AgeRecognition> {
         if (isInitialized) {
             Util.printLog("Processing face bitmap in synchronized manner for age classification.")
+            if (!verifyFacePresence(faceBitmap)) {
+                throw IllegalArgumentException("There is no face portraits in the given image.")
+            }
             return classifier.recognizeImage(faceBitmap, 0)
         } else {
             Util.printLog("Viola age classifier is not initialized. Throwing exception.")
             throw IllegalStateException("Viola age classifier is not initialized.")
         }
+    }
+
+    private fun verifyFacePresence(bitmap: Bitmap): Boolean {
+        val pBitmap: Bitmap = bitmap.copy(Bitmap.Config.RGB_565, true)
+        val faceDetector = FaceDetector(pBitmap.width, pBitmap.height, 1)
+        val faceArray = arrayOfNulls<FaceDetector.Face>(1)
+        val faceCount = faceDetector.findFaces(pBitmap, faceArray)
+        return faceCount != 0
     }
 }

@@ -96,7 +96,6 @@ class MainActivity : AppCompatActivity() {
         startActivityForResult(chooserIntent, imagePickerIntentId)
     }
 
-
     private fun crop() {
         val faceOption =
             FaceOptions.Builder()
@@ -153,10 +152,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onAgeClassificationError(error: String) {
-
+            tvError.text = error
+            tvError.visibility = View.VISIBLE
         }
     }
-
 
     private val permissionsListener: PermissionHelper.PermissionsListener = object :
         PermissionHelper.PermissionsListener {
@@ -170,11 +169,10 @@ class MainActivity : AppCompatActivity() {
             request_code: Int,
             neverAsk: Boolean
         ) {
-            tvError.text = "Permission for storage access denied."
+            "Permission for storage access denied.".also { tvError.text = it }
             tvError.visibility = View.VISIBLE
         }
     }
-
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onRequestPermissionsResult(
