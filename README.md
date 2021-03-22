@@ -12,19 +12,19 @@ With Viola Age classification library, you can find age range of a given face bi
 ## Getting Started
 **Demo application**
 
-Download sample application [sample_v_1.0.0](app-viola-age-demo.apk)
+Download sample application [sample_v_1.0.1](app-viola-age-v1.0.1-demo.apk.apk)
 
 **Compatibility**
- * *Minimum Android SDK* : Viola Age 1.0.0 requires a minimum API level of 21.
+ * *Minimum Android SDK* : Viola Age 1.0.1 requires a minimum API level of 21.
 
 **Installation**
 
-Download the latest aar from [JCenter](https://bintray.com/darwinfrancis/Viola/download_file?file_path=com%2Fdarwin%2Fviola%2Fage%2F1.0.0%2Fage-1.0.0.aar) or grab via
+Download the latest aar from [JCenter](https://bintray.com/darwinfrancis/Viola/download_file?file_path=com%2Fdarwin%2Fviola%2Fage%2F1.0.1%2Fage-1.0.1.aar) or grab via
 
 Gradle:
 ```gradle
 dependencies {
-  implementation 'com.darwin.viola:age:1.0.0'
+  implementation 'com.darwin.viola:age:1.0.1'
 }
 ```
 
@@ -34,7 +34,7 @@ or Maven:
 <dependency>
   <groupId>com.darwin.viola</groupId>
   <artifactId>age</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <type>pom</type>
 </dependency>
 ```
