@@ -8,7 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
-import java.lang.IllegalArgumentException
 
 
 /**
@@ -57,9 +56,11 @@ class ViolaAgeClassifier(private val listener: AgeClassificationListener) {
         if (isInitialized) {
             Util.printLog("Processing face bitmap for age classification.")
             coroutineScope.launch {
-                if (verifyFacePresence(faceBitmap)) {
+                val resizedBitmap = resize(faceBitmap)
+                val fixedBitmap = Util.forceEvenBitmapSize(resizedBitmap)!!
+                if (verifyFacePresence(fixedBitmap)) {
                     val results: List<AgeRecognition> =
-                        classifier.recognizeImage(faceBitmap, 0)
+                        classifier.recognizeImage(resizedBitmap, 0)
                     Util.printLog("Age classification completed, sending back the result.")
                     withContext(Dispatchers.Main) { listener.onAgeClassificationResult(results) }
                 } else {
@@ -77,10 +78,12 @@ class ViolaAgeClassifier(private val listener: AgeClassificationListener) {
     fun findAgeSynchronized(faceBitmap: Bitmap): List<AgeRecognition> {
         if (isInitialized) {
             Util.printLog("Processing face bitmap in synchronized manner for age classification.")
-            if (!verifyFacePresence(faceBitmap)) {
+            val resizedBitmap = resize(faceBitmap)
+            val fixedBitmap = Util.forceEvenBitmapSize(resizedBitmap)!!
+            if (!verifyFacePresence(fixedBitmap)) {
                 throw IllegalArgumentException("There is no face portraits in the given image.")
             }
-            return classifier.recognizeImage(faceBitmap, 0)
+            return classifier.recognizeImage(resizedBitmap, 0)
         } else {
             Util.printLog("Viola age classifier is not initialized. Throwing exception.")
             throw IllegalStateException("Viola age classifier is not initialized.")
@@ -93,5 +96,23 @@ class ViolaAgeClassifier(private val listener: AgeClassificationListener) {
         val faceArray = arrayOfNulls<FaceDetector.Face>(1)
         val faceCount = faceDetector.findFaces(pBitmap, faceArray)
         return faceCount != 0
+    }
+
+    private fun resize(image: Bitmap): Bitmap {
+        Util.printLog("Re-scaling input bitmap for fast image processing.")
+        val maxWidth = 300
+        val maxHeight = 400
+        val width = image.width
+        val height = image.height
+        val ratioBitmap = width.toFloat() / height.toFloat()
+        val ratioMax = maxWidth.toFloat() / maxHeight.toFloat()
+        var finalWidth = maxWidth
+        var finalHeight = maxHeight
+        if (ratioMax > ratioBitmap) {
+            finalWidth = (maxHeight.toFloat() * ratioBitmap).toInt()
+        } else {
+            finalHeight = (maxWidth.toFloat() / ratioBitmap).toInt()
+        }
+        return Bitmap.createScaledBitmap(image, finalWidth, finalHeight, true)
     }
 }

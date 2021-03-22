@@ -48,8 +48,8 @@
 
     <ImageView
         android:id="@+id/ivFaceImage"
-        android:layout_width="250dp"
-        android:layout_height="200dp"
+        android:layout_width="180dp"
+        android:layout_height="220dp"
         android:layout_marginBottom="8dp"
         android:paddingStart="4dp"
         android:paddingEnd="4dp"
