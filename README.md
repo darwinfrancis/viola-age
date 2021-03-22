@@ -88,6 +88,9 @@ Viola Age Classification provides the following values in Result class
 ## Author
 Darwin Francis - @darwinfrancis on GitHub, @darwin-francis on linkedin
 
+## Other works
+[Viola-Face](https://github.com/darwinfrancis/viola) face detection and crop library for android.
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
