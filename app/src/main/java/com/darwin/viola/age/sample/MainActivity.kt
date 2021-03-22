@@ -5,6 +5,8 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.PointF
+import android.media.FaceDetector
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -15,17 +17,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.darwin.viola.age.AgeClassificationListener
 import com.darwin.viola.age.AgeRecognition
 import com.darwin.viola.age.ViolaAgeClassifier
-import com.darwin.viola.still.FaceDetectionListener
-import com.darwin.viola.still.Viola
-import com.darwin.viola.still.model.CropAlgorithm
-import com.darwin.viola.still.model.FaceDetectionError
-import com.darwin.viola.still.model.FaceOptions
-import com.darwin.viola.still.model.Result
 import kotlinx.android.synthetic.main.activity_main.*
+
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var viola: Viola
     private lateinit var violaAgeClassifier: ViolaAgeClassifier
     private var bitmap: Bitmap? = null
 
@@ -41,7 +37,6 @@ class MainActivity : AppCompatActivity() {
         initializeUI()
         setEventListeners()
 
-        viola = Viola(faceDetectionListener)
         violaAgeClassifier = ViolaAgeClassifier(ageClassifierListener)
         violaAgeClassifier.initialize(this)
     }
@@ -71,7 +66,16 @@ class MainActivity : AppCompatActivity() {
             requestStoragePermission()
         }
         btFindAge.setOnClickListener {
-            crop()
+            val faceBitmap = cropFaceFromBitmap(bitmap!!)
+            faceBitmap?.let {
+                tvError.visibility = View.GONE
+                ivFaceImage.setImageBitmap(faceBitmap)
+                violaAgeClassifier.findAgeAsync(faceBitmap)
+            }?:run {
+                "Unable to crop face from given image.".also { tvError.text = it }
+                tvError.visibility = View.VISIBLE
+                ivFaceImage.setImageBitmap(null)
+            }
         }
     }
 
@@ -96,15 +100,60 @@ class MainActivity : AppCompatActivity() {
         startActivityForResult(chooserIntent, imagePickerIntentId)
     }
 
-    private fun crop() {
-        val faceOption =
-            FaceOptions.Builder()
-                .cropAlgorithm(CropAlgorithm.THREE_BY_FOUR)
-                .setMinimumFaceSize(6)
-                .enableProminentFaceDetection()
-                .build()
-        viola.detectFace(bitmap!!, faceOption)
+
+    private fun cropFaceFromBitmap(bitmap: Bitmap): Bitmap? {
+        val pBitmap: Bitmap = bitmap.copy(Bitmap.Config.RGB_565, true)
+        val faceDetector = FaceDetector(pBitmap.width, pBitmap.height, 1)
+        val faceArray = arrayOfNulls<FaceDetector.Face>(1)
+        val faceCount = faceDetector.findFaces(pBitmap, faceArray)
+
+        if (faceCount != 0) {
+            val face: FaceDetector.Face = faceArray[0]!!
+
+            val faceMidpoint = PointF()
+
+            face.getMidPoint(faceMidpoint);
+
+            val eyesDistance = face.eyesDistance()
+            val xPadding = (eyesDistance * 2)
+            val yPadding = (eyesDistance * 2)
+
+            var bStartX = faceMidpoint.x - xPadding
+            bStartX = bStartX.coerceAtLeast(0.0f)
+            var bStartY = faceMidpoint.y - yPadding
+            bStartY = bStartY.coerceAtLeast(0.0f)
+            var bWidth = (eyesDistance / 0.25).toFloat()
+
+            var bHeight = (bWidth / 0.75).toFloat()
+
+            bWidth =
+                if (bStartX + bWidth > bitmap.width) bitmap.width.toFloat() else bWidth
+            bHeight =
+                if (bStartY + bHeight > bitmap.height) bitmap.height.toFloat() else bHeight
+
+            if (bStartY + bHeight > bitmap.height) {
+                val excessHeight: Float = bStartY + bHeight - bitmap.height
+                bHeight -= excessHeight
+            }
+
+            if (bStartX + bWidth > bitmap.width) {
+                val excessWidth: Float = bStartX + bWidth - bitmap.width
+                bWidth -= excessWidth
+            }
+
+            return Bitmap.createBitmap(
+                bitmap,
+                bStartX.toInt(),
+                bStartY.toInt(),
+                bWidth.toInt(),
+                bHeight.toInt()
+            )
+        } else {
+            return null
+        }
+
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -121,22 +170,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private val faceDetectionListener: FaceDetectionListener = object : FaceDetectionListener {
-
-        override fun onFaceDetected(result: Result) {
-            tvError.visibility = View.GONE
-            val faceBitmap = result.facePortraits[0].face
-            ivFaceImage.setImageBitmap(faceBitmap)
-            violaAgeClassifier.findAgeAsync(faceBitmap)
-        }
-
-        override fun onFaceDetectionFailed(error: FaceDetectionError, message: String) {
-            tvError.text = message
-            tvError.visibility = View.VISIBLE
-            ivFaceImage.setImageBitmap(null)
-        }
-    }
-
     private val ageClassifierListener = object : AgeClassificationListener {
         override fun onAgeClassificationResult(result: List<AgeRecognition>) {
             val builder = StringBuilder()
@@ -145,6 +178,7 @@ class MainActivity : AppCompatActivity() {
                 builder.append(it.range)
                 builder.append(", Confidence: ")
                 builder.append(it.confidence)
+                builder.append(" %")
                 builder.append("\n")
             }
 

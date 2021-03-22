@@ -177,8 +177,10 @@ internal abstract class Classifier protected constructor(
             val recognitionsSize = pq.size.coerceAtMost(MAX_RESULTS)
             for (i in 0 until recognitionsSize) {
                 val poll = pq.poll()
-                @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-                recognitions.add(poll)
+                poll?.let {
+                    val confidence = poll.confidence * 100
+                    recognitions.add(poll.copy(confidence = confidence))
+                }
             }
             return recognitions
         }
