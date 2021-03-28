@@ -15,6 +15,7 @@ import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.darwin.viola.age.AgeClassificationListener
+import com.darwin.viola.age.AgeOptions
 import com.darwin.viola.age.AgeRecognition
 import com.darwin.viola.age.ViolaAgeClassifier
 import kotlinx.android.synthetic.main.activity_main.*
@@ -70,8 +71,8 @@ class MainActivity : AppCompatActivity() {
             faceBitmap?.let {
                 tvError.visibility = View.GONE
                 ivFaceImage.setImageBitmap(faceBitmap)
-                violaAgeClassifier.findAgeAsync(faceBitmap)
-            }?:run {
+                findAge(faceBitmap)
+            } ?: run {
                 "Unable to crop face from given image.".also { tvError.text = it }
                 tvError.visibility = View.VISIBLE
                 ivFaceImage.setImageBitmap(null)
@@ -84,6 +85,13 @@ class MainActivity : AppCompatActivity() {
         val requiredPermissions =
             arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
         permissionHelper.requestPermission(requiredPermissions, 100)
+    }
+
+    private fun findAge(faceBitmap: Bitmap) {
+        val ageOption = AgeOptions.Builder()
+            .enableFacePreValidation() //ignore this if you are confident that input image has valid face in it.
+            .build()
+        violaAgeClassifier.findAgeAsync(faceBitmap, ageOption)
     }
 
     private fun pickImageFromGallery() {
@@ -102,7 +110,9 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun cropFaceFromBitmap(bitmap: Bitmap): Bitmap? {
-        val pBitmap: Bitmap = bitmap.copy(Bitmap.Config.RGB_565, true)
+        val resizedBitmap = resize(bitmap)
+        val fixedBitmap = forceEvenBitmapSize(resizedBitmap)
+        val pBitmap: Bitmap = fixedBitmap.copy(Bitmap.Config.RGB_565, true)
         val faceDetector = FaceDetector(pBitmap.width, pBitmap.height, 1)
         val faceArray = arrayOfNulls<FaceDetector.Face>(1)
         val faceCount = faceDetector.findFaces(pBitmap, faceArray)
@@ -127,22 +137,22 @@ class MainActivity : AppCompatActivity() {
             var bHeight = (bWidth / 0.75).toFloat()
 
             bWidth =
-                if (bStartX + bWidth > bitmap.width) bitmap.width.toFloat() else bWidth
+                if (bStartX + bWidth > fixedBitmap.width) fixedBitmap.width.toFloat() else bWidth
             bHeight =
-                if (bStartY + bHeight > bitmap.height) bitmap.height.toFloat() else bHeight
+                if (bStartY + bHeight > fixedBitmap.height) fixedBitmap.height.toFloat() else bHeight
 
-            if (bStartY + bHeight > bitmap.height) {
-                val excessHeight: Float = bStartY + bHeight - bitmap.height
+            if (bStartY + bHeight > fixedBitmap.height) {
+                val excessHeight: Float = bStartY + bHeight - fixedBitmap.height
                 bHeight -= excessHeight
             }
 
-            if (bStartX + bWidth > bitmap.width) {
-                val excessWidth: Float = bStartX + bWidth - bitmap.width
+            if (bStartX + bWidth > fixedBitmap.width) {
+                val excessWidth: Float = bStartX + bWidth - fixedBitmap.width
                 bWidth -= excessWidth
             }
 
             return Bitmap.createBitmap(
-                bitmap,
+                fixedBitmap,
                 bStartX.toInt(),
                 bStartY.toInt(),
                 bWidth.toInt(),
@@ -154,6 +164,38 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun resize(image: Bitmap): Bitmap {
+        val maxWidth = 300
+        val maxHeight = 400
+        val width = image.width
+        val height = image.height
+        val ratioBitmap = width.toFloat() / height.toFloat()
+        val ratioMax = maxWidth.toFloat() / maxHeight.toFloat()
+        var finalWidth = maxWidth
+        var finalHeight = maxHeight
+        if (ratioMax > ratioBitmap) {
+            finalWidth = (maxHeight.toFloat() * ratioBitmap).toInt()
+        } else {
+            finalHeight = (maxWidth.toFloat() / ratioBitmap).toInt()
+        }
+        return Bitmap.createScaledBitmap(image, finalWidth, finalHeight, true)
+    }
+
+    private fun forceEvenBitmapSize(original: Bitmap): Bitmap {
+        var width = original.width
+        var height = original.height
+        if (width % 2 == 1) {
+            width++
+        }
+        if (height % 2 == 1) {
+            height++
+        }
+        var fixedBitmap = original
+        if (width != original.width || height != original.height) {
+            fixedBitmap = Bitmap.createScaledBitmap(original, width, height, false)
+        }
+        return fixedBitmap
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -177,7 +219,7 @@ class MainActivity : AppCompatActivity() {
                 builder.append("Range: ")
                 builder.append(it.range)
                 builder.append(", Confidence: ")
-                builder.append(it.confidence)
+                builder.append(it.confidence.toBigDecimal().toPlainString())
                 builder.append(" %")
                 builder.append("\n")
             }

@@ -3,6 +3,7 @@ package com.darwin.viola.age
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Trace
+import android.util.Log
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.nnapi.NnApiDelegate
 import org.tensorflow.lite.support.common.FileUtil

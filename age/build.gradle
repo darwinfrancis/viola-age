@@ -65,7 +65,7 @@ ext {
     siteUrl = 'https://github.com/darwinfrancis/viola'    // git repo url
     gitUrl = 'https://github.com/darwinfrancis/viola.git' // git repo vcs url
 
-    libraryVersion = '1.0.1'      // library version
+    libraryVersion = '1.0.2'      // library version
 
     developerId = 'darwinfrancis'                // This is your bintray username
     developerName = 'Darwin Francis'              // Developer's name
