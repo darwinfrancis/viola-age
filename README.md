@@ -12,19 +12,19 @@ With Viola Age classification library, you can find age range of a given face bi
 ## Getting Started
 **Demo application**
 
-Download sample application [sample_v_1.0.1](app-viola-age-v1.0.1-demo.apk.apk)
+Download sample application [sample_v_1.0.2](app-viola-age-v1.0.2-demo.apk)
 
 **Compatibility**
- * *Minimum Android SDK* : Viola Age 1.0.1 requires a minimum API level of 21.
+ * *Minimum Android SDK* : Viola Age 1.0.2 requires a minimum API level of 21.
 
 **Installation**
 
-Download the latest aar from [JCenter](https://bintray.com/darwinfrancis/Viola/download_file?file_path=com%2Fdarwin%2Fviola%2Fage%2F1.0.1%2Fage-1.0.1.aar) or grab via
+Download the latest aar from [JCenter](https://bintray.com/darwinfrancis/Viola/download_file?file_path=com%2Fdarwin%2Fviola%2Fage%2F1.0.2%2Fage-1.0.2.aar) or grab via
 
 Gradle:
 ```gradle
 dependencies {
-  implementation 'com.darwin.viola:age:1.0.1'
+  implementation 'com.darwin.viola:age:1.0.2'
 }
 ```
 
@@ -34,7 +34,7 @@ or Maven:
 <dependency>
   <groupId>com.darwin.viola</groupId>
   <artifactId>age</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <type>pom</type>
 </dependency>
 ```
@@ -58,7 +58,14 @@ private val listener: AgeClassificationListener = object : AgeClassificationList
 //OR using synchronous function call
 val result:List<AgeRecognition> = violaAgeClassifier.findAgeSynchronized(faceBitmap)   //synchronous call   
 ```
-
+*with FaceOptions*
+```kotlin
+val ageOption =
+    AgeOptions.Builder()
+               .enableFacePreValidation()
+               .build()
+violaAgeClassifier.findAgeAsync(bitmap,ageOption)
+```
 
 **Java**
 ```java
@@ -77,6 +84,20 @@ private final AgeClassificationListener listener = new AgeClassificationListener
 //OR using synchronous function call
 List<AgeRecognition> result = violaAgeClassifier.findAgeSynchronized(faceBitmap);   //synchronous call
 ```
+*with FaceOptions*
+```java
+AgeOptions ageOption = new AgeOptions.Builder()
+                .enableFacePreValidation()
+                .build();
+violaAgeClassifier.findAgeAsync(bitmap,ageOption)
+```
+
+### Configure the age classifier
+Viola age-classifier is currently extended with the following configurations. Instructions on how to use them in your own application are linked below.
+
+| AgeOptions | Description | Type | Default |
+| :--- | :--- | :--- | :--- |
+| `preValidateFace` |  Indicates whether to validate face presence before age classification (ignore this if input image has valid face in it.) | boolean | false |
 
 ### Age classification result
 Viola Age Classification provides the following values in Result class
