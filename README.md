@@ -58,7 +58,7 @@ private val listener: AgeClassificationListener = object : AgeClassificationList
 //OR using synchronous function call
 val result:List<AgeRecognition> = violaAgeClassifier.findAgeSynchronized(faceBitmap)   //synchronous call   
 ```
-*with FaceOptions*
+*with AgeOptions*
 ```kotlin
 val ageOption =
     AgeOptions.Builder()
@@ -84,7 +84,7 @@ private final AgeClassificationListener listener = new AgeClassificationListener
 //OR using synchronous function call
 List<AgeRecognition> result = violaAgeClassifier.findAgeSynchronized(faceBitmap);   //synchronous call
 ```
-*with FaceOptions*
+*with AgeOptions*
 ```java
 AgeOptions ageOption = new AgeOptions.Builder()
                 .enableFacePreValidation()
