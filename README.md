@@ -1,5 +1,5 @@
 # Viola-Age
-[ ![Download](https://api.bintray.com/packages/darwinfrancis/Viola/com.darwin.viola.age/images/download.svg) ](https://bintray.com/darwinfrancis/Viola/com.darwin.viola.age/_latestVersion)
+[ ![Download](https://jitpack.io/v/darwinfrancis/viola-age.svg) ](https://github.com/darwinfrancis/viola-age/releases/download/1.0.2/age-1.0.2.aar)
 [![Platform](https://img.shields.io/badge/platform-android-green.svg)](http://developer.android.com/index.html)
 [![API](https://img.shields.io/badge/API-21+-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=15)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat)](https://github.com/darwinfrancis/face-perception/blob/master/LICENSE.txt)
@@ -19,12 +19,22 @@ Download sample application [sample_v_1.0.2](app-viola-age-v1.0.2-demo.apk)
 
 **Installation**
 
-Download the latest aar from [JCenter](https://bintray.com/darwinfrancis/Viola/download_file?file_path=com%2Fdarwin%2Fviola%2Fage%2F1.0.2%2Fage-1.0.2.aar) or grab via
+Download the latest aar from [jitpack](https://github.com/darwinfrancis/viola-age/releases/download/1.0.2/age-1.0.2.aar) or grab via
 
-Gradle:
+root build.gradle:
+```gradle
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+
+app build.gradle:
 ```gradle
 dependencies {
-  implementation 'com.darwin.viola:age:1.0.2'
+  implementation 'com.github.darwinfrancis:viola-age:1.0.2'
 }
 ```
 
@@ -32,8 +42,8 @@ or Maven:
 
 ```xml
 <dependency>
-  <groupId>com.darwin.viola</groupId>
-  <artifactId>age</artifactId>
+  <groupId>com.github.darwinfrancis</groupId>
+  <artifactId>viola-age</artifactId>
   <version>1.0.2</version>
   <type>pom</type>
 </dependency>
